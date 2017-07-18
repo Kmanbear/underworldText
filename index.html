@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .hide{
+        display: none;
+      }
+      td{
+        border: 1px solid black;
+      }
+    </style>
+    <script>
+      var user = {
+        maxHealth: 10,
+        health: 10,
+        attack: 5,
+        skills: ["none"],
+        atheism: false,
+        antidepressants: false,
+        music: false,
+        clothArmor: false,
+        nonviolence: false,
+        damageTaken: function(damage){
+          if (user.clothArmor === true){
+            user.health = user.health - Math.floor(0.7 * damage);
+            return Math.floor(0.7 * damage);
+          }
+          else{
+            user.health = user.health - damage;
+            return damage;
+          }
+          updateTable();
+        },
+        restoreHealth: function(){
+          user.health = user.maxHealth
+          updateTable();
+        }
+      }
+      
+      function updateTable(){
+        document.getElementById("health").innerHTML = user.health;
+        document.getElementById("maxHealth").innerHTML = user.maxHealth;
+        document.getElementById("attack").innerHTML = user.attack;
+        document.getElementById("skills").innerHTML = user.skills;
+      }
+      
+      function restart(){
+        var y = document.getElementsByTagName('button');
+        for(i = 0; i < y.length; i++){
+          y[i].style.display = "block";
+        }
+        var x = document.getElementsByClassName('hide');
+        for(i = 0; i < x.length; i++){
+          x[i].style.display = "none";
+        }
+        document.getElementById("rat1").innerHTML = "You decide to fight the damn rat. He is awfully fast and probably pretty good at soccer. 'This is worse than Yale,' you hear him murmur.";
+        document.getElementById("rat2").innerHTML = "You continue on into a dark tunnel. You step on a squeaky stress ball and - another rat? He says his name is Ethan. Maybe they are...brodents?";
+        document.getElementById("nail").innerHTML = "I wonder what finger this nail came from? And how did it get";
+        document.getElementById("takeDrugs").innerHTML = "Nice try, idiot. You got peer pressured into doing drugs by a computer.";
+        document.getElementById("bShapSlaying").innerHTML = 'HA! You fool! Ben Shapiro is a master debater. He is the best master debater in the world. He practices master debating everyday, spitting out white destructive goo that traps his opponents. He jumps off a building, spinning at 450 revolutions per minute. White goo spews out of his waist and thighs (he has a long "glue" bottle). GAME OVER. 360 no scope baby a triple GG NO RE EZ K THX GET PWNED N00B TROLOLOLOLOLOL 404 ERROR TOO SAVAGE FOR YOU';
+        document.getElementById("fightMonk").innerHTML = "YOU KNOW HE'S GANDHI! YOU ASSHOLE! WHY WOULD YOU MURDER HIM AGAIN?"
+        rat.restoreHealth();
+        rat2.restoreHealth();
+        nail.restoreHealth();
+        bshap.restoreHealth();
+        drugs.restoreHealth();
+        monk.restoreHealth();
+        akshay.restoreHealth();
+      }
+      
+      function checkDeath(){
+        if (user.health <= 0){
+          alert("Game Over!");
+          var y = document.getElementsByTagName('button');
+          for(i = 0; i < y.length; i++){
+            y[i].style.display = "none";
+          }
+        }
+      }
+      
+      var monster = function(name, health, attack){
+        this.maxHealth = health;
+        this.name = name;
+        this.health = health;
+        this.attack = attack;
+        this.damageTaken = function(damage){
+          this.health = this.health - damage;
+          updateTable();
+        }
+        this.restoreHealth = function(){
+          this.health = this.maxHealth
+        };
+      }
+      function special(chance, id, maxHealth, health, attack){
+        var randomNumber = Math.ceil(Math.random() * 100);
+        var element = document.getElementById(id);
+        if (randomNumber <= chance){
+          user.maxHealth += maxHealth;
+          user.health += health;
+          user.attack += attack;
+          updateTable();
+          checkDeath();
+          element.innerHTML += "<br> Your max health is " + user.maxHealth + ". Your current health is " + user.health + ". Your attack is " + user.attack + "."
+        }
+        else{
+          element.innerHTML += "<br> Strangely, nothing happened. Maybe you got lucky (or unlucky)."
+        }
+      }
+      
+      function battle(id, user, monster){
+        //battling, prints lines of damage
+        while (monster.health > 0 && user.health > 0){
+          //user.damageTaken(monster.attack);
+          var element = document.getElementById(id);
+          element.innerHTML = element.innerHTML + "<br> The " + monster.name + " attacked you and dealt " + user.damageTaken(monster.attack) + " damage! Your health is " + user.health + ".";
+          monster.damageTaken(user.attack);
+          element.innerHTML = element.innerHTML + "<br> You attacked the " + monster.name + " and dealt " + user.attack + " damage! The " + monster.name + "'s health is " + monster.health + ".";
+        }
+        checkDeath();
+        if(monster.health <= 0){
+          user.maxHealth = user.maxHealth + Math.ceil(monster.maxHealth * 0.1);
+          user.attack = user.attack + Math.ceil(monster.attack * 0.1);
+          updateTable();
+          element.innerHTML = element.innerHTML + "<br> You devoured the monster's soul and now you gained some of the monster's stats. Your max health is " + user.maxHealth + " and your attack is " + user.attack + "!"
+        }
+      }
+      function checkDuplicate(skill){//returns true if it finds duplicate
+        var duplicates = [];
+        for (i=0; i<user.skills.length; i++){
+          if (user.skills[i] == skill){
+            duplicates.push(skill);
+            break;
+          }
+        }
+        if (duplicates.length == 0){
+          return false;
+        }
+        else{
+          return true;
+        }
+      }
+      
+      
+      function learn(skill){
+        if (checkDuplicate(skill) === false){
+          user.skills.push(skill);
+        }
+        updateTable();
+        if (skill === "atheism"){
+          user.atheism = true;
+        }
+        if (skill === "antidepressants"){
+          user.antidepressants = true;
+        }
+        if (skill === "music"){
+          user.music = true;
+        }
+        if (skill === "cloth armor"){
+          user.clothArmor = true;
+        }
+        if (skill === "nonviolence"){
+          user.nonviolence = true;
+        }
+      }
+      
+      function displayNext(class1){
+        //hides button
+        var x = document.getElementsByTagName("button");
+        for (i = 0; i < x.length; i++){
+          if (x[i].classList.contains(class1)){
+            x[i].style.display = "block";
+          }
+          else{
+            x[i].style.display = "none";
+          }
+        }
+        //reveals next line based on id
+        var y = document.getElementsByClassName(class1)
+        for (i = 0; i < y.length; i++){
+          y[i].style.display = "block";
+        }
+      }
+      
+      function boss(correctId, wrongId, item){
+        if (item == true){
+          displayNext(correctId);
+        }
+        else{
+          displayNext(wrongId);
+          alert("Game Over!");
+          var y = document.getElementsByTagName('button');
+          for(i = 0; i < y.length; i++){
+            y[i].style.display = "none";
+          }
+        }
+      }
+      //generate all monsters, first number is health, second number is damage
+      //don't forget to add .restoreHealth at the restart function when adding new monster
+      var rat = new monster("rat", 5, 3);
+      var rat2 = new monster("rat", 13, 1);
+      var nail = new monster("nail", 1, 5);
+      var bshap = new monster("Ben Shapiro", 123456789, 123456789);
+      var drugs = new monster("Oxycontin", 99999999999999999, 999999999999);
+      var monk = new monster("Gandhi", 1, 0);
+      var akshay = new monster("Akshay", 45, 12);
+      var hades = new monster("Hades", 40, 10);
+    </script>
+  </head>
+  
+  <body>
+    <!-- Every single time you add next line:
+      1.  Think of new class and add it to each element.
+      2.  Write class into the previous "displayNext()."
+      3.  Write class = hide-->
+    <table>
+      <tr>
+        <td>Health</td>
+        <td id = "health"></td>
+      </tr>
+      <tr>
+        <td>Max Health</td>
+        <td id = "maxHealth"></td>
+      </tr>
+      <tr>
+        <td>Attack</td>
+        <td id = "attack"></td>
+      </tr>
+      <tr>
+        <td>Skills/Items</td>
+        <td id = "skills">None</td>
+      </tr>
+    </table>
+    <script>updateTable()</script><!-- Updating table instantly -->
+    <p id = "intro" display = "block">Welcome to the Underworld.</p>
+    
+    <button onclick = "displayNext('instructions')">Next</button>
+    
+    <p class = "instructions hide">Instructions: Read, make choices, fight, don't die...again. Have fun in hell.</p>
+    <button class = "instructions hide" onclick = "displayNext('setting')">Next</button>
+
+    <p class = "setting hide">You are there. Brown sludge is up to your shins and your feet squirm and shake in the slimy substance. Suddenly, a huge rat pops up.</p>
+    <button class = "setting hide" onclick = "displayNext('fightRat'), battle('rat1', user, rat)">Fight the rat!   @xx[{:::::::></button>
+    <button class = "setting hide" onclick = "displayNext('fleeRat')">Run away! (∩︵∩)</button>
+    <button class = "setting hide" onclick = "displayNext('hole')">Start frantically digging through the brown sludge!</button>
+    <button class = "setting hide" onclick = "displayNext('warning')">Try to escape (DO THIS LAST)</button>
+    
+    <p class = 'warning hide'>You spot an EXIT sign behind you. There is a large warning written by the creator of the game: This is the point of no return. You will need all of the skills and items in this game to beat all of the bosses. I would strongly suggest exploring everything before attempting to tackle the long string of bosses stopping you from escaping hell.</p>
+    <button class = 'warning hide' onclick = "restart()">Go back home (no penalty)</button>
+    <button class = 'warning hide' onclick = "displayNext('akshay')">Continue trying to escape</button>
+    
+    <p class = "akshay hide">An Indian boy with glasses pops up. He is wearing an innocent plaid shirt. Is this even a challenge? He says, "I only fight in self-defense." </p>
+    <button class = "akshay hide" onclick = "displayNext('akshayFight'), battle('akshayFight', user, akshay)">We'll see about your self-defense @xx[{:::::::></button>
+    <p id = "akshayFight" class = "akshayFight hide">You lunge forward at him even though he doesn't even want to fight you. Unfortunately, he is stronger than he looks.</p>
+    <button class = "akshayFight hide" onclick = "displayNext('dragon')">Move on!</button>
+    
+    <p class = "dragon hide">You approach a dragon. For no reason. The dragon wasn't even blocking the path; you just wanted to go over there and kill it. Poor dragons. What weapon do you use to slay this helpless dragon? Try to choose hand-to-hand combat.</p>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">AK47 ︻┳デ═—</button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">Knife )xxxxx[;;;;;;;;;></button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">Laser eyes -@-@-</button>
+    <button class = "dragon hide" onclick = "displayNext('dragonKilled')">Bare hands</button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">Rusty nail |--></button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">Viola</button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">B3N SH@P1R0's debating skills</button>
+    <button class = "dragon hide" onclick = "displayNext('dragonFlies')">Martial arts</button>
+    
+    <p class = "dragonFlies hide">I'm so sorry. The dragon flew away harmlessly without being killed. For some reason, you feel sad you didn't randomly kill a dragon. You commit suicide. :(</p>
+    
+    <p class = "dragonKilled hide">CONGRATULATIONS! YOU HAVE JUST VANQUISHED A DRAGON WITH YOUR BARE HANDS! - videogame logic</p>
+    <button class = "dragonKilled hide" onclick = "displayNext('ares')">Move on!</button>
+    
+    <p class = 'ares hide'>You walk in and see Ares rolling on the ground in anger. He bellows, "I AM ARES. I AM NO MERE MORTAL. MEET YOUR DOOM!" "I thought Hades ruled over the underworld..." you say.</p>
+    <button class = "ares hide" onclick = "boss('aresSuccess', 'aresFail', user.nonviolence)">Tell him something...</button>
+    <p class = "aresFail hide">Ares looks confused for a moment...then he rips you to shreds. Let this be a message for the future generations of the dead.</p>
+    <p class = "aresSuccess hide">You tell Ares about the idea of nonviolence. Using Gandhi's methods, Ares realizes that war is useless. "Sorry for the disturbance," Ares says. "I will now go march to the beach to get salt."</p>
+    <button class = "aresSuccess hide" onclick = "displayNext('cerberus')" >Move on!</button>
+    <p class = "cerberus hide">You see Hades in the distance, sitting on his throne of bones. Out of the corner of your eye, you spot a patch of fur. Actually, three patches. You sidestep out of the way as Cerberus pounces in front of you.</p>
+    <button class = "cerberus hide" onclick = "boss('cerberusSuccess', 'cerberusFail', user.music)">Start singing</button>
+    <p class = "cerberusFail hide">You start singing, but you can't. Let's face it; your singing sounds like screaming. Cerberus has a nice meal that day.</p>
+    <p class = "cerberusSuccess hide">You start singing, but you can't. Luckily, the creator of the game taught you how to music, so you music instead. Cerberus likes musicing quite a lot, and he decides to take a nap and let Hades deal with the intruder.</p>
+    <button class = "cerberusSuccess hide" onclick = "displayNext('hades')">Move on!</button>
+    <p class = "hades hide">Hades doesn't seem to happy. In fact, he is quite depressed to be around in the Underworld. He is about to kill you immediately when:</p>
+    <button class = "hades hide" onclick = "boss('hadesSuccess', 'hadesFail', user.antidepressants)">you give him something in your pocket</button>
+    <p class = "hadesFail hide">You give him a rat. WTF? A rat is all you can give to Hades? This is ridiculous. Hades stops being sad and instead cracks your skull. His throne just got a new upgrade. Have fun in hell!</p>
+    <p class = "hadesSuccess hide">You give him some antidepressants. Unfortunately, they were RAT antidepressants, so they weren't strong enough. At least he's willing to fight you.</p>
+    <button class = "hadesSuccess hide" onclick = "displayNext('hadesBattle'), battle('hadesBattle', user, hades)">Fight him! @xx[{:::::::></button>
+    <p id = "hadesBattle" class = "hadesBattle hide">He seems weaker than Akshay. Akshay is the superior fighting god.</p>
+    <button class = "hadesBattle hide" onclick = "displayNext('god')">Move on!</button>
+    <p class = "god hide">OMG! You made a serious mistake. It's God. GOD is ready to stop you from leaving hell. Luckily:</p>
+    <button class = "god hide" onclick = "boss('godSuccess', 'godFailure', user.atheism)">You remember something</button>
+    <p class = "godFailure hide">You remember that nobody can beat God. A quick flash of lighting and you are toast. OMFG!</p>
+    <p class = "godSuccess hide">You're an atheist!!! Who is God? You're just a bunch of dead molecules floating in space and time. BAM!  God promptly fades away in your mind.</p>
+    <button class = "godSuccess hide" onclick = "displayNext('congrats')">You won!</button>
+    <p class = 'congrats hide'>CONGRATULATIONS! YOU WON! OMG! YOU'RE THE LEGEND27! CARLWALLACE LIVES AGAIN! Game created by: Kyle Xiong. Inspired by people around me, bad jokes, and stereotypes.</p>
+    
+    <p class = "hole hide">The brown sludge clears and you fall through the cracks of the earth. You must have gone underneath the underworld, where it is pitch black. To the left, you hear a great violist playing the Brahms Sonatensatz. Right in front of you, you hear a violin duet. Behind you, you hear a cello masterpiece that truly melts the heart. There is a slightly off A minor scale coming from underneath more brown sludge. Finally, you hear some perfect-pitch singer to your right.</p>
+    <button class = "hole hide" onclick = "displayNext('nyle')">Left</button>
+    <p class = 'nyle hide'>You spot an Indian kid with his tongue out. His concentration is unmatched as his fingers dance and his bow skims the strings of his viola. You try to ask a question, but you are too stunned by the music. <br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. </p>
+    <button class = "nyle hide" onclick = "restart()">Reincarnate!</button>
+    
+    <button class = "hole hide" onclick = "displayNext('shunCynthia')">Walk forwards</button>
+    <p class = 'shunCynthia hide'>It seems as if the duet has ended. The Japanese boy on the left flings out his bow in one final dramatic sweep. Both he and the Chinese girl next to him are smiling. The violins still echoe in the dark chamber that you found yourself in.<br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. </p>
+    <button class = "shunCynthia hide" onclick = "restart()">Reincarnate!</button>
+    <button class = "hole hide" onclick = "displayNext('henry')">Walk backwards</button>
+    <p class = 'henry hide'>You walk backwards and stumble on a stage. Thousands are watching a man with a baseball cap on play the cello. He certainly doesn't have a suit on; you can tell he hates wearing suits, even at a formal concert. He plays his heart out in a beautiful Bach cello suite. Of course, he makes sure to make a few mistakes. After all, he wouldn't want to hurt Thomas Wallace's feelings.<br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. </p>
+    <button class = "henry hide" onclick = "restart()">Reincarnate!</button>
+    <button class = "hole hide" onclick = "displayNext('matthew')">Right</button>
+    <p class = "matthew hide">A blond boy sings a simple melody. The pitches are remarkable; they all sound perfect. Suddenly, the blond boy turns. "Did you know I made all-states?" he says. You are taken aback by the sound of another voice (besides me, of course). "Uhh, yeah," you say. "Can you teach me how to sing like that?" But it is too late. The blond boy starts singing again.<br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. </p>
+    <button class = "matthew hide" onclick = "restart()">Reincarnate!</button>
+    <button class = "hole hide" onclick = "displayNext('kyle')">Dig down</button>
+    <p class = "kyle hide">You fall down into a small pit. A Chinese boy looks up from his viola. He shakes and rubs his sore hands. "Can you teach me music?" you ask. "Maybe..." he says. "But first, let me give you a riddle. What's a priest's favorite scale?"</p>
+    <button class = "kyle hide" onclick = "displayNext('wrong')">C major</button>
+    <button class = "kyle hide" onclick = "displayNext('right')">A minor</button>
+    <button class = "kyle hide" onclick = "displayNext('wrong')">G minor</button>
+    
+    <p class = "wrong hide">"Sorry, that's not correct," the Chinese boy says. He turns around and starts practicing his A minor scale again. <br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills.</p>
+    <button class = "wrong hide" onclick = "restart()">Reincarnate!</button>
+    
+    <p class = "right hide">"Man, you already knew this one?" the Chinese boy says. "What do you want?" "Can I learn how to music?" you ask. "I'm not really that great at music. Sorry..." he replies. You are about to leave when he says, "...but I did make this game. I guess I can help you beat it." The boy grabs a Chromebook and types learn('music') into the keyboard. Suddenly, you know how to music. "Thanks!" you say.</p>
+    <button class = "right hide" onclick = "displayNext('musicReincarnation'), learn('music')">Learn music</button>
+    
+    <p class = "musicReincarnation hide">Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. Music sounds like a great skill.</p>
+    <button class = "musicReincarnation hide" onclick = "restart()">Reincarnate!</button>
+    
+    <p class = "fleeRat hide">You run away from the rat! Wow, you really are a coward.</p>
+    <button class = "fleeRat hide" onclick = "displayNext('nailEncounter')">Next</button>
+    
+    <p id = "rat1" class = "fightRat hide">You decide to fight the damn rat. RAWR!</p>
+    <button class = "fightRat hide" onclick = "displayNext('setting2')">Next</button>
+    
+    <p class = "setting2 hide">You continue on into a dark tunnel. You step on a squeaky stress ball and - another rat? Rats! Maybe they are...brodents?</p>
+    <button class = "setting2 hide" onclick = "displayNext('fightRat2'), battle('rat2', user, rat2)">Fight the rat!   @xx[{:::::::></button>
+    
+    <p id = "rat2" class = "fightRat2 hide">This seems familiar. At least when you stepped on the rat, you weakened it.</p>
+    <button class = "fightRat2 hide" onclick = "displayNext('CVS')">Next</button>
+    
+    <p class = "CVS hide">You come across a small cardboard box. It's rat CVS! Don't worry, these rats are stoned on antidepressants.</p>
+    <button class = "CVS hide" onclick = "displayNext('takeAntidepressants'), learn('antidepressants')">Take antidepressants!</button>
+    
+    <p class = "takeAntidepressants hide">No silly, you don't actually eat rat antidepressants. Instead, you take the antidepressants and shove it in your inventory. Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. Also, please do NOT try to pop those antidepressants into your mouth. They will kill...</p>
+    <button class = "takeAntidepressants hide" onclick = "restart()">Reincarnate!</button>
+    <button class = "takeAntidepressants hide" onclick = "displayNext('takeDrugs'), battle('takeDrugs', user, drugs)">Be a rebel and take the drugs!</button>
+    
+    <p id = 'takeDrugs' class = "takeDrugs hide">Nice try, idiot. You got peer pressured into doing drugs by a computer.</p>
+    
+    <button class = "setting2 hide" onclick = "displayNext('fleeRat2')">Run away! (∩︵∩)</button>
+    
+    <p class = "fleeRat2 hide">COWARD! Nothing good comes out of fleeing from battle...wait, is that the Fountain of Youth? What? How did I miss that in the years that I have been a creepy omniscient voice here?</p>
+    <button class = "fleeRat2 hide" onclick = "user.restoreHealth(), displayNext('fountainOfYouth')">Drink from Fountain of Youth</button>
+    
+    <p class = "fountainOfYouth hide">Delicious! Your health is restored! HUGE TIP: You can visit the Fountain of Youth repeatedly to restore health. <br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. And don't forget to use the Fountain of Youth when you get sad. It's better than antidepressants!</p>
+    <button class = "fountainOfYouth hide" onclick = "restart()">Reincarnate!</button>
+    
+    <p class = "nailEncounter hide">You see a rusty nail. Do you try to pick it up?</p>
+    <button class = "nailEncounter hide" onclick = "displayNext('pickUpNail'), battle('nail', user, nail)">Pick up the nail. |--></button>
+    
+    <button class = "nailEncounter hide" onclick = "displayNext('fleeNail'), special(75, 'fleeNail', 0, -4, 0)">Run away! (∩︵∩)</button>
+    
+    <p id = "nail" class = "pickUpNail hide">Holy smokes! It's alive! Now you gotta fight it...</p>
+    <button class = "pickUpNail hide" onclick = "displayNext('mysteriousMonk')">Next</button>
+    
+    <p class = "mysteriousMonk hide">You see a mysterious monk in the distance. He looks extremely sketchy. Why is he wearing cloth armor?</p>
+    <button class = "mysteriousMonk hide" onclick = "displayNext('fightMonk'), battle('fightMonk', user, monk)">Fight him! @xx[{:::::::></button>
+    <p id = "fightMonk" class = "fightMonk hide">You're HURTING Gandhi! WHY?! YOUR A MONSTER!</p>
+    <button class = "fightMonk hide" onclick = "displayNext('gandhiMurdered'), learn('cloth armor')">Steal Gandhi's cloth after you murder him</button>
+    
+    <p class = "gandhiMurdered hide">I don't have any words for you. That's just disgusting. And how is cloth armor even a thing?<br>Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. That cloth you stole when you brutally murdered Gandhi might still be of use. You're still a monster, though.</p>
+    <button class = "gandhiMurdered hide" onclick = "restart()">Reincarnate!</button>
+    
+    <button class = "mysteriousMonk hide" onclick = "displayNext('nonviolence')">Talk to him! </button>
+    <p class = 'nonviolence hide'>"Hi, my name is Gandhi. I will teach you the ways of nonviolence." You follow Gandhi for years, learning nonviolence.</p>
+    <button class = 'nonviolence hide' onclick = "displayNext('learnedNonviolence'), learn('nonviolence')">Learn nonviolence</button>
+    <p class = "learnedNonviolence hide">You have finally mastered nonviolence. Now you can add nonviolence to your weapon arsenal.<br>Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. Nonviolence may seem useless, but it can defeat even the most powerful of gods.</p>
+    <button class = "learnedNonviolence hide" onclick = "restart()">Reincarnate!</button>
+    <p id = "fleeNail" class = "fleeNail hide">You run away, but you accidentally step on the rusty nail. LOL! Serves you right for being a coward. You know, the game is more fun if you do stuff.</p>
+    <button class = "fleeNail hide" onclick = "displayNext('benShapiro')">Next</button>
+    
+    <p class = "benShapiro hide">You come across a man. He says his name, but you can't quite here all the letters. His name is B__ SH_PI__. He offers to teach you atheism or liberal arts. What do you do?</p>
+    <button class = "benShapiro hide" onclick = "displayNext('atheism'), learn('atheism')">Learn atheism</button>
+    <p class = "atheism hide">You spend a few seconds learning atheism. There doesn't seem to be much to learn, and you are confused why someone is trying to teach you this. Suddenly, an alarm goes off in your head. You know your time is up.<br>Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. Believe it or not, atheism is actually a necessary skill.</p>
+    <button class = "atheism hide" onclick = "restart()">Reincarnate!</button>
+    
+    <button class = "benShapiro hide" onclick = "displayNext('liberalArts')">Learn liberal arts</button>
+    
+    <p id = "artOfLiberals" class = "liberalArts hide">You spend a few years learning the art of liberals. There is so much to learn and so little to do. _EN __A__RO teaches you how to crush conservatives and Trump supporters using the power of debate. You gain one attack point. </p>
+    <button class = "liberalArts hide" onclick = "special(100, 'artOfLiberals', 0, 0, 1), displayNext('liberalArtsButton'), learn('liberal arts')">Crush conservatives with B3N SH@P1R0</button>
+    <p class = "liberalArtsButton hide">Suddenly, an alarm goes off in your head. You know your time is up. Below is a button to reincarnate. You keep your skills and stats in order to continue exploring all of the storylines. Certain new events can be unlocked through retained skills. I'm not sure how useful liberal arts are though.</p>
+    <button class = "liberalArtsButton hide" onclick = "restart()">Reincarnate!</button>
+    
+    <button class = "benShapiro hide" onclick = "displayNext('rekt'), battle('bShapSlaying', user, bshap)">Try to debate against him</button>
+    <p id= "bShapSlaying" class = "rekt hide">HA! You fool! Ben Shapiro is a master debater. He is the best master debater in the world. He practices master debating everyday, spitting out white destructive goo that traps his opponents. He jumps off a building, spinning at 450 revolutions per minute. White goo spews out of his waist and thighs (he has a long "glue" bottle). GAME OVER. 360 no scope baby a triple GG NO RE EZ K THX GET PWNED N00B TROLOLOLOLOLOL 404 ERROR TOO SAVAGE FOR YOU</p>
+  </body>
+</html>
